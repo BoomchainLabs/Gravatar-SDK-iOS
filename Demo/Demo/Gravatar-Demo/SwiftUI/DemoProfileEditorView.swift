@@ -11,8 +11,14 @@ struct DemoProfileEditorView: View {
     @State private var selectedScheme: UIUserInterfaceStyle = .unspecified
     @Environment(\.oauthSession) var oauthSession
 
-    @State private var profileConfiguration: ProfileViewConfiguration = .standard()
+    @State private var profileConfiguration: ProfileViewConfiguration = Self.initialConfiguration()
     @State private var oneTimeAvatarForceRefresh: Bool = false
+
+    private static func initialConfiguration() -> ProfileViewConfiguration {
+        var config: ProfileViewConfiguration = .summary()
+        config.padding = .init(top: 8, left: 0, bottom: 8, right: 0)
+        return config
+    }
 
     var body: some View {
         VStack(spacing: 20) {
