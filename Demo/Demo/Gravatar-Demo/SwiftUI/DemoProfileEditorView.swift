@@ -125,3 +125,11 @@ struct ProfileSummary: UIViewRepresentable {
         uiView.update(with: profileModel)
     }
 }
+
+class RefreshTrigger: ObservableObject {
+    var onTrigger: (() -> Void)?
+
+    func trigger() {
+        onTrigger?()
+    }
+}
