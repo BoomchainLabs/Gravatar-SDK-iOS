@@ -106,30 +106,3 @@ struct DemoProfileEditorView: View {
 #Preview {
     DemoProfileEditorView()
 }
-
-struct ProfileSummary: UIViewRepresentable {
-    @Binding var profileModel: ProfileModel?
-    @Binding var avatarID: AvatarIdentifier?
-    @Binding var trigger: RefreshTrigger
-
-    func makeUIView(context: Context) -> GravatarUI.ProfileSummaryView {
-        let pageViewController = ProfileSummaryView()
-        return pageViewController
-    }
-    
-    func updateUIView(_ uiView: GravatarUI.ProfileSummaryView, context: Context) {
-        trigger.onTrigger = {
-            uiView.loadAvatar(with: avatarID, rating: .x, options: [.forceRefresh])
-        }
-
-        uiView.update(with: profileModel)
-    }
-}
-
-class RefreshTrigger: ObservableObject {
-    var onTrigger: (() -> Void)?
-
-    func trigger() {
-        onTrigger?()
-    }
-}
