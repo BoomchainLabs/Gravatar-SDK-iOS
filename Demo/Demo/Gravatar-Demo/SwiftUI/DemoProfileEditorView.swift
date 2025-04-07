@@ -11,14 +11,8 @@ struct DemoProfileEditorView: View {
     @State private var selectedScheme: UIUserInterfaceStyle = .unspecified
     @Environment(\.oauthSession) var oauthSession
 
-    @State private var profileConfiguration: ProfileViewConfiguration = Self.initialConfiguration()
+    @State private var profileConfiguration: ProfileViewConfiguration = .summary()
     @State private var oneTimeAvatarForceRefresh: Bool = false
-
-    private static func initialConfiguration() -> ProfileViewConfiguration {
-        var config: ProfileViewConfiguration = .summary()
-        config.padding = .init(top: 8, left: 0, bottom: 8, right: 0)
-        return config
-    }
 
     var body: some View {
         VStack(spacing: 20) {
@@ -28,7 +22,8 @@ struct DemoProfileEditorView: View {
                     .textInputAutocapitalization(.never)
                     .keyboardType(.emailAddress)
                     .disableAutocorrection(true)
-                Divider()
+                    .textFieldStyle(.roundedBorder)
+
                 ProfileViewRepresentable(configuration: $profileConfiguration, oneTimeAvatarForceRefresh: $oneTimeAvatarForceRefresh)
                 if #available(iOS 16.0, *) {
                     QEContentLayoutPickerRow(contentLayoutOptions: $contentLayoutOptions)
@@ -81,6 +76,7 @@ struct DemoProfileEditorView: View {
 
             Spacer()
         }
+        .background(Color(UIColor.systemGroupedBackground))
         .onAppear() {
             updateHasSession(with: email)
             requestProfile()

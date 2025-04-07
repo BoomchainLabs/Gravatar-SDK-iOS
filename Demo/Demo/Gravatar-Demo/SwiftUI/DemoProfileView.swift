@@ -18,7 +18,7 @@ struct DemoProfileView: View {
                     .textInputAutocapitalization(.never)
                     .keyboardType(.emailAddress)
                     .disableAutocorrection(true)
-                Divider()
+                    .textFieldStyle(.roundedBorder)
                 ProfileViewRepresentable(
                     configuration: $profileConfiguration,
                     oneTimeAvatarForceRefresh: .constant(false)
@@ -66,7 +66,7 @@ struct DemoProfileView: View {
             self.profileConfiguration.delegate = self.profileDelegate
             requestProfile()
         }
-        .background(Color(UIColor.systemBackground))
+        .background(Color(UIColor.systemGroupedBackground))
         .sheet(item: $safariURL) { identifiableURL in
             SafariView(url: identifiableURL.url)
                 .edgesIgnoringSafeArea(.all)
@@ -139,10 +139,8 @@ fileprivate class ProfileDelegate: NSObject, ObservableObject, ProfileViewDelega
 }
 
 fileprivate extension ProfileViewConfiguration {
-    
     func customize(delegate: ProfileViewDelegate?) -> ProfileViewConfiguration {
         var config = self
-        config.padding = .zero
         config.avatarConfiguration.activityIndicatorType = .activity
         config.delegate = delegate
         return config
