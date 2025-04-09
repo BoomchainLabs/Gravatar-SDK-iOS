@@ -478,7 +478,7 @@ final class URLSessionAvatarPickerMock: URLSessionProtocol {
 
 extension URLRequest {
     private enum RequestType: String {
-        case profiles
+        case profiles = "/me/profile"
         case avatars
     }
 
