@@ -19,6 +19,8 @@ struct Toast: View {
     private(set) var toast: ToastItem
     private(set) var dismissHandler: (ToastItem) -> Void
 
+    @AccessibilityFocusState var focus: Bool
+
     var body: some View {
         HStack(spacing: 0) {
             Text(toast.message)
@@ -47,6 +49,12 @@ struct Toast: View {
             view.shadow(radius: 3, y: 3)
         })
         .zIndex(1)
+        .accessibilityFocused($focus)
+        .onAppear() {
+            if toast.type == .error {
+                focus = true
+            }
+        }
     }
 
     var backgroundColor: Color {
