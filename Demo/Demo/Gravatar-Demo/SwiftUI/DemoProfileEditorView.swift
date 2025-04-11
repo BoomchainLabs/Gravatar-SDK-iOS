@@ -49,7 +49,7 @@ struct DemoProfileEditorView: View {
                                 onDismiss: {
                                     updateHasSession(with: email)
                                 }
-                        )
+                            ).environment(\.colorScheme, ColorScheme(selectedScheme) ?? .light)
                     }
                     else {
                         view
@@ -64,6 +64,7 @@ struct DemoProfileEditorView: View {
                                     updateHasSession(with: email)
                                 }
                             )
+                            .environment(\.colorScheme, ColorScheme(selectedScheme) ?? .light)
                     }
                 }
 
@@ -85,7 +86,7 @@ struct DemoProfileEditorView: View {
             updateHasSession(with: newValue)
             requestProfile()
         }
-        .environment(\.colorScheme, ColorScheme(selectedScheme) ?? .light)
+        
     }
 
     func requestProfile() {
