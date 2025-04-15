@@ -8,9 +8,7 @@ class ToastManager: ObservableObject {
         let toast = ToastItem(message: message, type: type, stackingBehavior: stackingBehavior)
         dismissExistingIfNeeded(upcomingToast: toast)
         toasts.append(toast)
-        if toast.type == .error {
-            UIAccessibility.post(notification: .announcement, argument: message)
-        }
+        UIAccessibility.post(notification: .announcement, argument: message)
         DispatchQueue.main.asyncAfter(deadline: .now() + calculateToastDuration(for: message)) {
             self.removeToast(toast.id)
         }
