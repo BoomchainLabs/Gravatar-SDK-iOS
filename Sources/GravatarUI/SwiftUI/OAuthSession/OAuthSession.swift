@@ -18,8 +18,26 @@ public struct OAuthSession: Sendable {
     }
 
     /// Returns whether the user session remains active in the browser.
+    public func getPrefersEphemeralWebBrowserSession() async -> Bool {
+        await Self.shared.sessionData.getPrefersEphemeralWebBrowserSession()
+    }
+
+    /// Returns whether the user session remains active in the browser.
     public static func getPrefersEphemeralWebBrowserSession() async -> Bool {
-        await shared.sessionData.getPrefersEphemeralWebBrowserSession()
+        await shared.getPrefersEphemeralWebBrowserSession()
+    }
+
+    /// Determines whether the user session remains active in the browser.
+    ///
+    /// When set to `true`, the user is required to enter their credentials from scratch during every OAuth flow.
+    /// Given that Gravatar access tokens expire after 2 weeks, this effectively means logging in every 2 weeks.
+    ///
+    /// When set to `false`, the user is still redirected through the OAuth flow every 2 weeks, but their session remains
+    /// active in the browser. As a result, they only need to authorize the app by tapping “Approve” without re-entering credentials.
+    ///
+    /// See also:  https://developer.apple.com/documentation/authenticationservices/aswebauthenticationsession/prefersephemeralwebbrowsersession
+    public func setPrefersEphemeralWebBrowserSession(_ value: Bool) async {
+        await Self.shared.sessionData.setPrefersEphemeralWebBrowserSession(value)
     }
 
     /// Determines whether the user session remains active in the browser.
@@ -32,7 +50,7 @@ public struct OAuthSession: Sendable {
     ///
     /// See also:  https://developer.apple.com/documentation/authenticationservices/aswebauthenticationsession/prefersephemeralwebbrowsersession
     public static func setPrefersEphemeralWebBrowserSession(_ value: Bool) async {
-        await shared.sessionData.setPrefersEphemeralWebBrowserSession(value)
+        await shared.setPrefersEphemeralWebBrowserSession(value)
     }
 
     public func hasSession(with email: Email) -> Bool {
