@@ -64,17 +64,20 @@ struct AvatarPickerAvatarView: View {
             .onTapGesture {
                 onAvatarTap(avatar)
             }
-            .accessibilityRepresentation {
-                Button("", action: { onAvatarTap(avatar) })
-                    .accessibilityLabel(Text(avatar.accessibilityLabel(altText: avatar.altText)))
-                    .accessibilityHint(shouldSelect() ? "" : .accessibilityAvatarHint)
-                    .accessibilityAddTraits(shouldSelect() ? .isSelected : [])
-            }
             switch avatar.state {
             case .loaded:
                 actionsMenu()
             default:
                 EmptyView()
+            }
+        }
+        .accessibilityElement(children: .combine)
+        .accessibilityAddTraits(.isButton)
+        .accessibilityAddTraits(shouldSelect() ? .isSelected : [])
+        .accessibilityLabel(Text(avatar.accessibilityLabel(altText: avatar.altText)))
+        .accessibilityAction(named: shouldSelect() ? "" : .accessibilityAvatarHint) {
+            if !shouldSelect() {
+                onAvatarTap(avatar)
             }
         }
     }
@@ -187,7 +190,7 @@ extension AvatarRating {
 extension String {
     fileprivate static let accessibilityAvatarHint = SDKLocalizedString(
         "Avatar.Accessibility.AvatarButton.Hint",
-        value: "Double tap to select avatar",
+        value: "Select this avatar",
         comment: "Hint spoken outloud by VoiceOver when an avatar is selected"
     )
     fileprivate static let accessibilityAvatarOptionsLabel = SDKLocalizedString(
