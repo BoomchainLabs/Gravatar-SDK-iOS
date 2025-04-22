@@ -98,9 +98,8 @@ extension OAuthSessionTests {
 
     func handleURL(_ url: URL, oauthSession: OAuthSession, isTokenAssociated: Bool = true) async throws -> Bool {
         // Hidding some complexity of this call to make it easier to read.
-        try await OAuthSession.handleCallback(
+        try await oauthSession.handleCallback(
             url,
-            shared: oauthSession,
             checkTokenAuthorizationService: checkTokenService(isAssociated: isTokenAssociated)
         )
     }
