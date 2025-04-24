@@ -68,6 +68,7 @@ extension View {
     /// - Returns: A modifier to display the QuickEditor sheet.
     @available(iOS 16.0, *)
     @ViewBuilder
+    // TODO: Deprecate old signature instead of changing it.
     public func gravatarQuickEditorSheet(
         isPresented: Binding<Bool>,
         email: String,
@@ -93,9 +94,10 @@ extension View {
                     modalView: editor,
                     contentLayout: scope.avatarPickerConfig!.contentLayout
                 ))
-            default:
-                modifier(ModalPresentationModifier(
+            case .aboutInfoEditor:
+                modifier(ModalVerticalPresentationWithStylesModifier(
                     isPresented: isPresented,
+                    presentationStyle: scope.aboutEditorConfig!.presentationStyle,
                     onDismiss: onDismiss,
                     modalView: editor
                 ))

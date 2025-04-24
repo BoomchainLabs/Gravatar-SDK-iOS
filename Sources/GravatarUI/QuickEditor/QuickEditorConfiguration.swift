@@ -34,7 +34,10 @@ public struct AvatarPickerConfiguration: Sendable {
 }
 
 public struct AboutEditorConfiguration: Sendable {
-    public init() {}
+    let presentationStyle: VerticalContentPresentationStyle
+    public init(presentationStyle: VerticalContentPresentationStyle = .expandableMedium()) {
+        self.presentationStyle = presentationStyle
+    }
 }
 
 extension AvatarPickerConfiguration {

@@ -26,7 +26,7 @@ public struct QuickEditorScopeStruct {
     }
 
     public static func aboutEditor(
-        _ config: AboutEditorConfiguration
+        _ config: AboutEditorConfiguration = .init()
     ) -> Self {
         .init(
             scope: .aboutInfoEditor,

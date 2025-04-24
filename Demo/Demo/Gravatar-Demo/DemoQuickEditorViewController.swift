@@ -64,7 +64,7 @@ final class DemoQuickEditorViewController: UIViewController {
         return token
     }
 
-    var selectedLayout: QELayoutOptions = .horizontal {
+    var selectedLayout: AvatarPickerLayoutOptions = .horizontal {
         didSet {
             layoutButton.setTitle(selectedLayout.rawValue, for: .normal)
         }
@@ -94,7 +94,7 @@ final class DemoQuickEditorViewController: UIViewController {
 
     @objc func presentLayoutOptions() {
         let sheet = UIAlertController(title: "Layout Options", message: nil, preferredStyle: .actionSheet)
-        QELayoutOptions.allCases.forEach { layout in
+        AvatarPickerLayoutOptions.allCases.forEach { layout in
             sheet.addAction(.init(title: layout.rawValue, style: .default) { _ in
                 self.selectedLayout = layout
             })

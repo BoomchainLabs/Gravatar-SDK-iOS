@@ -5,7 +5,7 @@ struct DemoProfileEditorView: View {
 
     @AppStorage("pickerEmail") private var email: String = ""
     @AppStorage("pickerToken") private var token: String = ""
-    @AppStorage("pickerContentLayoutOptions") private var contentLayoutOptions: QELayoutOptions = .verticalLarge
+    @AppStorage("pickerContentLayoutOptions") private var contentLayoutOptions: AvatarPickerLayoutOptions = .verticalLarge
     // You can make this `true` by default to easily test the picker
     @State private var isPresentingPicker: Bool = false
     @State private var hasSession: Bool = false
@@ -18,6 +18,7 @@ struct DemoProfileEditorView: View {
     @State var enableCustomImageCropper: Bool = false
     @State var prefersEphemeralWebBrowserSession: Bool = false
     @State private var scope: QuickEditorScopeType = .avatarPicker
+    @State private var verticalPresentationStyle: VerticalContentPresentationStyle = .expandableMedium()
 
     var body: some View {
         VStack(spacing: 20) {
@@ -43,30 +44,18 @@ struct DemoProfileEditorView: View {
                     }
                 }
                 Spacer().frame(height: 8)
-                ProfileViewRepresentable(configuration: $profileConfiguration, oneTimeAvatarForceRefresh: $oneTimeAvatarForceRefresh)
-                if #available(iOS 16.0, *) {
-                    QEContentLayoutPickerRow(contentLayoutOptions: $contentLayoutOptions)
-                }
-                Divider()
-
-                QEColorSchemePickerRow(selectedScheme: $selectedScheme)
-                
-                Divider()
-                Toggle("Custom image cropper", isOn: $enableCustomImageCropper)
+                ProfileViewRepresentable(
+                    configuration: $profileConfiguration,
+                    oneTimeAvatarForceRefresh: $oneTimeAvatarForceRefresh
+                )
                 Divider()
                 Toggle("Prefers ephemeral browser session", isOn: $prefersEphemeralWebBrowserSession)
                 Divider()
-                Menu {
-                    ForEach(QuickEditorScopeType.allCases, id: \.rawValue) { scope in
-                        Button(action: {
-                            self.scope = scope
-                        }) {
-                            Text(scope.rawValue)
-                        }
-                    }
-                } label: {
-                    Text("Scope: \(scope.rawValue)")
-                }
+                QEColorSchemePickerRow(selectedScheme: $selectedScheme)
+                Divider()
+                QEScopesPickerRow(scope: $scope)
+                Divider()
+                scopeOptions()
             }
             .padding(.horizontal)
                 Button("Open Profile Editor with OAuth flow") {
@@ -138,7 +127,21 @@ struct DemoProfileEditorView: View {
             case .avatarPicker:
                 return QuickEditorScopeStruct.avatarPicker(.init(contentLayout: contentLayoutOptions.contentLayout))
             case .aboutInfoEditor:
-                return QuickEditorScopeStruct.aboutEditor(.init())
+                return QuickEditorScopeStruct.aboutEditor(.init(presentationStyle: verticalPresentationStyle))
+        }
+    }
+
+    @ViewBuilder
+    func scopeOptions() -> some View {
+        switch scope {
+            case .avatarPicker:
+                if #available(iOS 16.0, *) {
+                    QEContentLayoutPickerRow(contentLayoutOptions: $contentLayoutOptions)
+                    Divider()
+                }
+                Toggle("Custom image cropper", isOn: $enableCustomImageCropper)
+            case .aboutInfoEditor:
+                QEVerticalStylePickerRow(verticalStyle: $verticalPresentationStyle)
         }
     }
 
