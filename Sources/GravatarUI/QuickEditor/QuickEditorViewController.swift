@@ -30,7 +30,7 @@ final class QuickEditorViewController: UIViewController, ModalPresentationWithIn
         case .avatarPicker:
             scope.avatarPickerConfig!.contentLayout
             default:
-                    .vertical(presentationStyle: .expandableMedium(initialFraction: 0.5, prioritizeScrollOverResize: false))
+                    .vertical(presentationStyle: .expandableMedium())
         }
     }
 

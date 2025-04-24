@@ -25,11 +25,6 @@ public struct AvatarPickerConfiguration: Sendable {
     ) {
         self.contentLayout = contentLayout
     }
-
-    @MainActor
-    func model(with email: Email, token: String) -> AvatarPickerViewModel {
-        AvatarPickerViewModel(email: email, authToken: token)
-    }
 }
 
 public struct AboutEditorConfiguration: Sendable {
