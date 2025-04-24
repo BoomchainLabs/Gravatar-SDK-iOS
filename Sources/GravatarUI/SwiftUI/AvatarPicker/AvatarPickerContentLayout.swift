@@ -78,11 +78,11 @@ extension VerticalContentPresentationStyle {
     var detents: [PresentationDetent] {
         switch self {
         case .large:
-            return [.large]
+            [.large]
         case .expandableMedium(initialFraction: let initialFraction, prioritizeScrollOverResize: _):
-            return [
+            [
                 .fraction(initialFraction),
-                .large
+                .large,
             ]
         }
     }

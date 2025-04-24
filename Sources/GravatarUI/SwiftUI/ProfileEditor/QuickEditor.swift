@@ -24,6 +24,7 @@ public struct QuickEditorUpdateType: Sendable, Equatable {
         case avatarUpdate
         case aboutInfoUpdate
     }
+
     private let rawValue: QEUpdateType
 
     public static let avatarUpdate = Self(rawValue: .avatarUpdate)

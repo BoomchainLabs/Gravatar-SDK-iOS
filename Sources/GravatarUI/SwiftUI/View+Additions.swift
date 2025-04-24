@@ -92,8 +92,6 @@ extension View {
         return modifier(ModalPresentationModifier(isPresented: isPresented, onDismiss: onDismiss, modalView: editor))
     }
 
-
-
     /// A modifier to display the QuickEditor sheet. QuickEditor can be used to select and upload a new avatar.
     /// - Parameters:
     ///   - isPresented: A Binding boolean to manage showing/hiding the sheet.
@@ -160,29 +158,29 @@ extension View {
         updatedHandler: ((QuickEditorUpdateType) -> Void)? = nil,
         onDismiss: (() -> Void)? = nil
     ) -> some View {
-            let editor = QuickEditor(
-                email: .init(email),
-                scope: scope,
-                token: authToken,
-                isPresented: isPresented,
-                customImageEditor: customImageEditor,
-                updatedHandler: updatedHandler
-            )
+        let editor = QuickEditor(
+            email: .init(email),
+            scope: scope,
+            token: authToken,
+            isPresented: isPresented,
+            customImageEditor: customImageEditor,
+            updatedHandler: updatedHandler
+        )
         switch scope.scope {
-            case .avatarPicker:
-                modifier(AvatarPickerModalPresentationModifier(
-                    isPresented: isPresented,
-                    onDismiss: onDismiss,
-                    modalView: editor,
-                    contentLayout: scope.avatarPickerConfig!.contentLayout
-                ))
-            case .aboutInfoEditor:
-                modifier(ModalVerticalPresentationWithStylesModifier(
-                    isPresented: isPresented,
-                    presentationStyle: scope.aboutEditorConfig!.presentationStyle,
-                    onDismiss: onDismiss,
-                    modalView: editor
-                ))
+        case .avatarPicker:
+            modifier(AvatarPickerModalPresentationModifier(
+                isPresented: isPresented,
+                onDismiss: onDismiss,
+                modalView: editor,
+                contentLayout: scope.avatarPickerConfig!.contentLayout
+            ))
+        case .aboutInfoEditor:
+            modifier(ModalVerticalPresentationWithStylesModifier(
+                isPresented: isPresented,
+                presentationStyle: scope.aboutEditorConfig!.presentationStyle,
+                onDismiss: onDismiss,
+                modalView: editor
+            ))
         }
     }
 
