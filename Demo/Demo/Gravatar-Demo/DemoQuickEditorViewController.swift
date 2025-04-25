@@ -221,18 +221,18 @@ final class DemoQuickEditorViewController: UIViewController {
         let button = button ?? logoutButton
         if #available(iOS 17, *) {
             UIView.animate {
-                button.isHidden = !OAuthSession.hasSession(with: Email(savedEmail))
+                button.isHidden = !OAuthSession.shared.hasSession(with: Email(savedEmail))
                 button.alpha = button.isHidden ? 0 : 1
             }
         } else {
-            button.isHidden = !OAuthSession.hasSession(with: Email(savedEmail))
+            button.isHidden = !OAuthSession.shared.hasSession(with: Email(savedEmail))
             button.alpha = button.isHidden ? 0 : 1
         }
     }
 
     func logout() {
         guard let savedEmail else { return }
-        OAuthSession.deleteSession(with: Email(savedEmail))
+        OAuthSession.shared.deleteSession(with: Email(savedEmail))
         updateLogoutButton()
     }
 
@@ -344,7 +344,7 @@ final class DemoQuickEditorViewController: UIViewController {
     
     @objc func togglePrefersEphemeralSession() {
         Task {
-            await OAuthSession.setPrefersEphemeralWebBrowserSession(prefersEphemeralSessionToggle.isOn)
+            await OAuthSession.shared.setPrefersEphemeralWebBrowserSession(prefersEphemeralSessionToggle.isOn)
         }
     }
 }

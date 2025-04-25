@@ -52,7 +52,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         guard let url = userActivity.webpageURL else { return }
 
         Task {
-            _ = await OAuthSession.handleCallback(url)
+            _ = await OAuthSession.shared.handleCallback(url)
         }
     }
 }
