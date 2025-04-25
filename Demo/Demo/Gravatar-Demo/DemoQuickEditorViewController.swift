@@ -74,7 +74,7 @@ final class DemoQuickEditorViewController: UIViewController {
         switch selectedScope {
         case .avatarPicker:
             .avatarPicker(.init(contentLayout: selectedLayout.contentLayout))
-        case .AboutEditor:
+        case .aboutEditor:
             .aboutEditor(.init(presentationStyle: selectedVerticalContentPresentationStyle))
         }
 
@@ -84,16 +84,12 @@ final class DemoQuickEditorViewController: UIViewController {
             scopeButton.setTitle("Scope: \(selectedScope.rawValue)", for: .normal)
 
             UIView.animate(withDuration: 0.5, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 0) {
-                self.imageEditorToggle.isHidden = self.selectedScope != .avatarPicker
-                self.imageEditorToggle.alpha = self.selectedScope != .avatarPicker ? 0 : 1
-                self.layoutButton.isHidden = self.selectedScope != .avatarPicker
-                self.layoutButton.alpha = self.selectedScope != .avatarPicker ? 0 : 1
-
-                self.aboutPresentationStyleButton.isHidden = self.selectedScope != .AboutEditor
-                self.aboutPresentationStyleButton.alpha = self.selectedScope != .AboutEditor ? 0 : 1
+                self.avatarPickerOptionsStackView.isHiddenForAnimation = self.selectedScope != .avatarPicker
+                self.aboutEditorOptionsStackView.isHiddenForAnimation = self.selectedScope != .aboutEditor
             }
         }
     }
+
     private var selectedVerticalContentPresentationStyle: VerticalContentPresentationStyle {
         switch selectedVerticalContentPresentationStyleRepresentation {
         case .expandableMedium:
@@ -148,8 +144,7 @@ final class DemoQuickEditorViewController: UIViewController {
         button.translatesAutoresizingMaskIntoConstraints = false
         button.setTitle("Vertical Presentation Style: \(selectedVerticalContentPresentationStyleRepresentation.rawValue)", for: .normal)
         button.addTarget(self, action: #selector(presentVerticalPresentationStyleOptions), for: .touchUpInside)
-        button.isHidden = true
-        button.alpha = 0
+        button.isHiddenForAnimation = true
         return button
     }()
 
@@ -250,6 +245,27 @@ final class DemoQuickEditorViewController: UIViewController {
         return button
     }()
 
+    lazy var avatarPickerOptionsStackView: UIStackView = {
+        let stackView = UIStackView(arrangedSubviews: [
+            imageEditorToggle,
+            layoutButton,
+        ])
+        stackView.translatesAutoresizingMaskIntoConstraints = false
+        stackView.axis = .vertical
+        stackView.spacing = 12
+        return stackView
+    }()
+
+    lazy var aboutEditorOptionsStackView: UIStackView = {
+        let stackView = UIStackView(arrangedSubviews: [
+            aboutPresentationStyleButton,
+        ])
+        stackView.translatesAutoresizingMaskIntoConstraints = false
+        stackView.axis = .vertical
+        stackView.spacing = 12
+        return stackView
+    }()
+
     lazy var rootStackView: UIStackView = {
         let stackView = UIStackView(arrangedSubviews: [
             emailField,
@@ -259,9 +275,8 @@ final class DemoQuickEditorViewController: UIViewController {
             schemeToggle,
             prefersEphemeralSessionToggle,
             scopeButton,
-            imageEditorToggle,
-            aboutPresentationStyleButton,
-            layoutButton,
+            avatarPickerOptionsStackView,
+            aboutEditorOptionsStackView,
             logoutButton,
             showButton
         ])
@@ -458,10 +473,22 @@ class MyCustomImageEditorController: UIViewController, CustomImageEditorControll
 
 private enum QEScope: String, CaseIterable, Hashable {
     case avatarPicker = "Avatar Picker"
-    case AboutEditor = "About Editor"
+    case aboutEditor = "About Editor"
 }
 
 private enum VerticalContentPresentationStyleRepresentation: String, CaseIterable, Hashable {
     case large = "Large"
     case expandableMedium = "Expandable Medium"
+}
+
+private extension UIView {
+    var isHiddenForAnimation: Bool {
+        get {
+            return isHidden && alpha == 0
+        }
+        set {
+            self.alpha = newValue ? 0 : 1
+            self.isHidden = newValue
+        }
+    }
 }
