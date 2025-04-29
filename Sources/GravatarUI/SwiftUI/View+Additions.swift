@@ -148,10 +148,12 @@ extension View {
                 ))
             }
         } else {
-            modifier(ModalPresentationModifier(
-                isPresented: isPresented,
-                onDismiss: onDismiss,
-                modalView: editor)
+            modifier(
+                ModalPresentationModifier(
+                    isPresented: isPresented,
+                    onDismiss: onDismiss,
+                    modalView: editor
+                )
             )
         }
     }

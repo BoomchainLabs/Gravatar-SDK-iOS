@@ -196,7 +196,7 @@ public struct QuickEditorPresenter {
     ) {
         self.email = email
         if case .avatarPicker(let config) = scope, #available(iOS 16, *) {
-                self.scope = QuickEditorScopeOption.avatarPicker(.init(contentLayout: config.contentLayout))
+            self.scope = QuickEditorScopeOption.avatarPicker(.init(contentLayout: config.contentLayout))
         } else if #available(iOS 16, *) {
             self.scope = QuickEditorScopeOption.avatarPicker(.init(contentLayout: .horizontal(presentationStyle: .intrinsicHeight)))
         } else {
