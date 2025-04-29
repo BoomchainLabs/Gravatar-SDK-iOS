@@ -55,7 +55,7 @@ struct QuickEditor<ImageEditor: ImageEditorView>: View {
     private let scope: QuickEditorScopeOption
     private let email: Email
     private let customImageEditor: ImageEditorBlock<ImageEditor>?
-    private let updatedHandler: ((QuickEditorUpdateType) -> Void)?
+    private let updateHandler: ((QuickEditorUpdateType) -> Void)?
 
     init(
         email: Email,
@@ -63,14 +63,14 @@ struct QuickEditor<ImageEditor: ImageEditorView>: View {
         token: String? = nil,
         isPresented: Binding<Bool>,
         customImageEditor: ImageEditorBlock<ImageEditor>? = nil,
-        updatedHandler: ((QuickEditorUpdateType) -> Void)? = nil
+        updateHandler: ((QuickEditorUpdateType) -> Void)? = nil
     ) {
         self.email = email
         self.scope = scope
         self._isPresented = isPresented
         self.customImageEditor = customImageEditor
         self.externalToken = token
-        self.updatedHandler = updatedHandler
+        self.updateHandler = updateHandler
         self._model = StateObject(wrappedValue: AvatarPickerViewModel(email: email, authToken: token))
     }
 
@@ -117,7 +117,7 @@ struct QuickEditor<ImageEditor: ImageEditorView>: View {
                     performAuthentication()
                 },
                 avatarUpdatedHandler: {
-                    updatedHandler?(.avatarUpdate)
+                    updateHandler?(.avatarUpdate)
                 }
             )
         case .aboutInfoEditor:

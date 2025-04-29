@@ -97,13 +97,12 @@ final class DemoQuickEditorViewController: UIViewController {
     private var selectedVerticalContentPresentationStyle: VerticalContentPresentationStyle {
         switch selectedVerticalContentPresentationStyleRepresentation {
         case .expandableMedium:
-            print("MEDIUM")
-            return .expandableMedium()
+            .expandableMedium()
         case .large:
-            print("LARGE")
-            return .large
+            .large
         }
     }
+
     private var selectedVerticalContentPresentationStyleRepresentation: VerticalContentPresentationStyleRepresentation = .expandableMedium {
         didSet {
             aboutPresentationStyleButton.setTitle(

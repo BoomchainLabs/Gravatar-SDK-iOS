@@ -50,7 +50,7 @@ extension View {
             token: authToken,
             isPresented: isPresented,
             customImageEditor: customImageEditor,
-            updatedHandler: { _ in
+            updateHandler: { _ in
                 avatarUpdatedHandler?()
             }
         )
@@ -88,11 +88,11 @@ extension View {
                 token: authToken,
                 isPresented: isPresented,
                 customImageEditor: customImageEditor,
-                updatedHandler: { _ in
+                updateHandler: { _ in
                     avatarUpdatedHandler?()
                 }
             )
-            return modifier(AvatarPickerModalPresentationModifier(
+            return modifier(QuickEditorModalPresentationModifier(
                 isPresented: isPresented,
                 onDismiss: onDismiss,
                 modalView: editor,
@@ -128,19 +128,19 @@ extension View {
             token: authToken,
             isPresented: isPresented,
             customImageEditor: customImageEditor,
-            updatedHandler: updateHandler
+            updateHandler: updateHandler
         )
         if #available(iOS 16.0, *) {
             switch scope.scope {
             case .avatarPicker:
-                modifier(AvatarPickerModalPresentationModifier(
+                modifier(QuickEditorModalPresentationModifier(
                     isPresented: isPresented,
                     onDismiss: onDismiss,
                     modalView: editor,
                     contentLayout: scope.avatarPickerConfig.contentLayout
                 ))
             case .aboutInfoEditor:
-                modifier(AvatarPickerModalPresentationModifier(
+                modifier(QuickEditorModalPresentationModifier(
                     isPresented: isPresented,
                     onDismiss: onDismiss,
                     modalView: editor,

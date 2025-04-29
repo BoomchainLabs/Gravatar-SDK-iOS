@@ -10,7 +10,7 @@ final class QuickEditorViewController: UIViewController, ModalPresentationWithIn
     let scope: QuickEditorScopeOption
     let token: String?
     let configuration: QuickEditorConfiguration
-    let onUpdate: ((QuickEditorUpdateType) -> Void)?
+    let updateHandler: ((QuickEditorUpdateType) -> Void)?
     let onDismiss: (() -> Void)?
 
     private lazy var isPresented: Binding<Bool> = Binding {
@@ -53,7 +53,7 @@ final class QuickEditorViewController: UIViewController, ModalPresentationWithIn
             token: token,
             isPresented: isPresented,
             customImageEditor: provider,
-            updatedHandler: onUpdate
+            updateHandler: updateHandler
         )
     }()
 
@@ -86,7 +86,7 @@ final class QuickEditorViewController: UIViewController, ModalPresentationWithIn
         self.configuration = configuration ?? .default
         self.token = token
         self.onDismiss = onDismiss
-        self.onUpdate = onUpdate
+        self.updateHandler = onUpdate
         super.init(nibName: nil, bundle: nil)
     }
 
