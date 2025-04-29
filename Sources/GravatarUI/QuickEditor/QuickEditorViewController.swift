@@ -195,10 +195,12 @@ public struct QuickEditorPresenter {
         token: String? = nil
     ) {
         self.email = email
-        if case .avatarPicker(let config) = scope {
-            self.scope = QuickEditorScopeOption.avatarPicker(.init(contentLayout: config.contentLayout))
-        } else {
+        if case .avatarPicker(let config) = scope, #available(iOS 16, *) {
+                self.scope = QuickEditorScopeOption.avatarPicker(.init(contentLayout: config.contentLayout))
+        } else if #available(iOS 16, *) {
             self.scope = QuickEditorScopeOption.avatarPicker(.init(contentLayout: .horizontal(presentationStyle: .intrinsicHeight)))
+        } else {
+            self.scope = QuickEditorScopeOption.avatarPicker()
         }
         self.configuration = configuration ?? .default
         self.token = token

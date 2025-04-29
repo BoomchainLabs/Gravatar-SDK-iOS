@@ -22,12 +22,23 @@ public struct QuickEditorScopeOption {
     /// Creates a `QuickEditorScopeOption` configured for the avatar picker scope.
     /// - Parameter config: Configuration to apply to the avatar picker.
     /// - Returns: A configured instance of `QuickEditorScopeOption` for the avatar picker scope.
+    @available(iOS 16.0, *)
     public static func avatarPicker(
         _ config: AvatarPickerConfiguration
     ) -> Self {
         .init(
             scope: .avatarPicker,
             avatarPickerConfig: config
+        )
+    }
+
+    /// Creates a `QuickEditorScopeOption` configured for the avatar picker scope.
+    /// - Returns: An instance of `QuickEditorScopeOption` for the avatar picker scope.
+    @available(iOS, deprecated: 16.0, renamed: "avatarPicker(_:)", message: "Use `avatarPicker(_:)` with the new configuration instead.")
+    public static func avatarPicker() -> Self {
+        .init(
+            scope: .avatarPicker,
+            avatarPickerConfig: .verticalLarge
         )
     }
 

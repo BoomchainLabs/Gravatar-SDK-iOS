@@ -73,12 +73,16 @@ final class DemoQuickEditorViewController: UIViewController {
     private var selectedScopeOption: QuickEditorScopeOption {
         switch selectedScope {
         case .avatarPicker:
-            .avatarPicker(.init(contentLayout: selectedLayout.contentLayout))
+            if #available(iOS 16.0, *) {
+                .avatarPicker(.init(contentLayout: selectedLayout.contentLayout))
+            } else {
+                .avatarPicker()
+            }
         case .aboutEditor:
             .aboutEditor(.init(presentationStyle: selectedVerticalContentPresentationStyle))
         }
-
     }
+
     private var selectedScope: QEScope = .avatarPicker {
         didSet {
             scopeButton.setTitle("Scope: \(selectedScope.rawValue)", for: .normal)

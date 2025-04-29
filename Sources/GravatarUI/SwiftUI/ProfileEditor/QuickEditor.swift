@@ -1,7 +1,7 @@
 import Gravatar
 import SwiftUI
 
-@available(iOS, deprecated: 16.0, renamed: "QuickEditorScopeOption", message: "This will become internal in a next mayor release.")
+@available(iOS, deprecated: 16.0, renamed: "QuickEditorScopeOption", message: "This will become internal in a next major release.")
 public enum QuickEditorScopeType: Sendable {
     case avatarPicker
 }
@@ -72,22 +72,6 @@ struct QuickEditor<ImageEditor: ImageEditorView>: View {
         self.externalToken = token
         self.updatedHandler = updatedHandler
         self._model = StateObject(wrappedValue: AvatarPickerViewModel(email: email, authToken: token))
-    }
-
-    init(
-        email: Email,
-        scope: QuickEditorScopeOption,
-        token: String? = nil,
-        isPresented: Binding<Bool>,
-        updatedHandler: ((QuickEditorUpdateType) -> Void)? = nil
-    ) {
-        self.email = email
-        self._isPresented = isPresented
-        self.externalToken = token
-        self.updatedHandler = updatedHandler
-        self._model = StateObject(wrappedValue: AvatarPickerViewModel(email: email, authToken: token))
-        self.scope = scope
-        self.customImageEditor = nil
     }
 
     let authorizationFinishedNotification = NotificationCenter.default.publisher(for: .authorizationFinished)

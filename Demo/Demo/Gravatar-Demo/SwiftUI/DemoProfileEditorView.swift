@@ -62,47 +62,27 @@ struct DemoProfileEditorView: View {
                     isPresentingPicker.toggle()
                 }
                 .modifier { view in
-                    if #available(iOS 16.0, *) {
-                        view
-                            .gravatarQuickEditorSheet(
-                                isPresented: $isPresentingPicker,
-                                email: email,
-                                authToken: !token.isEmpty ? token : nil,
-                                scopeOption: finalScope,
-                                customImageEditor: customImageEditor(),
-                                updatedHandler: { updateType in
-                                    switch updateType {
-                                        case .avatarUpdate:
-                                            self.oneTimeAvatarForceRefresh = true
-                                        case .aboutInfoUpdate:
-                                            break
-                                        default: break
-                                    }
-                                },
-                                onDismiss: {
-                                    updateHasSession(with: email)
+                    view
+                        .gravatarQuickEditorSheet(
+                            isPresented: $isPresentingPicker,
+                            email: email,
+                            authToken: !token.isEmpty ? token : nil,
+                            scopeOption: finalScope,
+                            customImageEditor: customImageEditor(),
+                            updateHandler: { updateType in
+                                switch updateType {
+                                    case .avatarUpdate:
+                                        self.oneTimeAvatarForceRefresh = true
+                                    case .aboutInfoUpdate:
+                                        break
+                                    default: break
                                 }
-                            ).environment(\.colorScheme, ColorScheme(selectedScheme) ?? .light)
-                    }
-                    else {
-                        view
-                            .gravatarQuickEditorSheet(
-                                isPresented: $isPresentingPicker,
-                                email: email,
-                                authToken: !token.isEmpty ? token : nil,
-                                scopeOption: finalScope,
-                                customImageEditor: customImageEditor(),
-                                updatedHandler: {
-                                    self.oneTimeAvatarForceRefresh = true
-                                },
-                                onDismiss: {
-                                    updateHasSession(with: email)
-                                }
-                            )
-                            .environment(\.colorScheme, ColorScheme(selectedScheme) ?? .light)
-                    }
+                            },
+                            onDismiss: {
+                                updateHasSession(with: email)
+                            }
+                        ).environment(\.colorScheme, ColorScheme(selectedScheme) ?? .light)
                 }
-
             if hasSession {
                 Button("Log out") {
                     oauthSession.deleteSession(with: .init(email))
@@ -131,7 +111,11 @@ struct DemoProfileEditorView: View {
     var finalScope: QuickEditorScopeOption {
         switch scope {
         case .avatarPicker:
-            return QuickEditorScopeOption.avatarPicker(.init(contentLayout: contentLayoutOptions.contentLayout))
+            if #available(iOS 16.0, *) {
+                return QuickEditorScopeOption.avatarPicker(.init(contentLayout: contentLayoutOptions.contentLayout))
+            } else {
+                return QuickEditorScopeOption.avatarPicker()
+            }
         case .aboutEditor:
             return QuickEditorScopeOption.aboutEditor(.init(presentationStyle: verticalPresentationStyle))
         }
