@@ -148,7 +148,6 @@ final class DemoQuickEditorViewController: UIViewController {
         button.translatesAutoresizingMaskIntoConstraints = false
         button.setTitle("Vertical Presentation Style: \(selectedVerticalContentPresentationStyleRepresentation.rawValue)", for: .normal)
         button.addTarget(self, action: #selector(presentVerticalPresentationStyleOptions), for: .touchUpInside)
-        button.isHiddenForAnimation = true
         return button
     }()
 
@@ -267,6 +266,7 @@ final class DemoQuickEditorViewController: UIViewController {
         stackView.translatesAutoresizingMaskIntoConstraints = false
         stackView.axis = .vertical
         stackView.spacing = 12
+        stackView.isHiddenForAnimation = true
         return stackView
     }()
 
