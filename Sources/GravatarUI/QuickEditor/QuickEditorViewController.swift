@@ -7,7 +7,7 @@ final class QuickEditorViewController: UIViewController, ModalPresentationWithIn
     private typealias CustomImageEditorProvider = ImageEditorBlock<CustomImageEditorControllerRepresentable>?
 
     let email: Email
-    let scope: QuickEditorScopeOption
+    let scopeOption: QuickEditorScopeOption
     let token: String?
     let configuration: QuickEditorConfiguration
     let updateHandler: ((QuickEditorUpdateType) -> Void)?
@@ -25,14 +25,6 @@ final class QuickEditorViewController: UIViewController, ModalPresentationWithIn
 
     var verticalSizeClass: UserInterfaceSizeClass?
     var sheetHeight: CGFloat = QEModalPresentationConstants.bottomSheetEstimatedHeight
-    var contentLayoutWithPresentation: AvatarPickerContentLayout {
-        switch scope.scope {
-        case .avatarPicker:
-            scope.avatarPickerConfig.contentLayout
-        case .aboutInfoEditor:
-            .vertical(presentationStyle: scope.aboutEditorConfig.presentationStyle)
-        }
-    }
 
     private lazy var rootView: QuickEditor = {
         let provider: CustomImageEditorProvider = if let customProvider = configuration.customImageEditorProvider {
@@ -49,7 +41,7 @@ final class QuickEditorViewController: UIViewController, ModalPresentationWithIn
 
         return QuickEditor(
             email: email,
-            scope: scope,
+            scopeOption: scopeOption,
             token: token,
             isPresented: isPresented,
             customImageEditor: provider,
@@ -75,14 +67,14 @@ final class QuickEditorViewController: UIViewController, ModalPresentationWithIn
 
     init(
         email: Email,
-        scope: QuickEditorScopeOption,
+        scopeOption: QuickEditorScopeOption,
         configuration: QuickEditorConfiguration? = nil,
         token: String? = nil,
         onUpdate: ((QuickEditorUpdateType) -> Void)? = nil,
         onDismiss: (() -> Void)? = nil
     ) {
         self.email = email
-        self.scope = scope
+        self.scopeOption = scopeOption
         self.configuration = configuration ?? .default
         self.token = token
         self.onDismiss = onDismiss
@@ -123,12 +115,12 @@ final class QuickEditorViewController: UIViewController, ModalPresentationWithIn
         if let sheet = sheetPresentationController {
             sheet.animateChanges {
                 sheet.detents = QEDetent.detents(
-                    for: contentLayoutWithPresentation,
+                    for: scopeOption,
                     intrinsicHeight: sheetHeight,
                     verticalSizeClass: verticalSizeClass
                 ).map()
             }
-            sheet.prefersScrollingExpandsWhenScrolledToEdge = !contentLayoutWithPresentation.prioritizeScrollOverResize
+            sheet.prefersScrollingExpandsWhenScrolledToEdge = !shouldPrioritizeScrollOverResize
         }
     }
 }
@@ -176,7 +168,7 @@ private class InnerHeightUIHostingController: UIHostingController<AnyView> {
 /// A struct responsible for presenting the Quick Editor from a UIKit context.
 public struct QuickEditorPresenter {
     let email: Email
-    let scope: QuickEditorScopeOption
+    let scopeOption: QuickEditorScopeOption
     let configuration: QuickEditorConfiguration
     let token: String?
 
@@ -196,9 +188,9 @@ public struct QuickEditorPresenter {
     ) {
         self.email = email
         if case .avatarPicker(let config) = scope {
-            self.scope = .avatarPicker(.init(contentLayout: config.contentLayout))
+            self.scopeOption = .avatarPicker(.init(contentLayout: config.contentLayout))
         } else {
-            self.scope = .avatarPicker(.horizontalInstrinsicHeight)
+            self.scopeOption = .avatarPicker(.horizontalInstrinsicHeight)
         }
         self.configuration = configuration ?? .default
         self.token = token
@@ -213,12 +205,12 @@ public struct QuickEditorPresenter {
     /// <doc:GravatarOAuth> for more info.
     public init(
         email: Email,
-        scopeOption scope: QuickEditorScopeOption,
+        scopeOption: QuickEditorScopeOption,
         configuration: QuickEditorConfiguration? = nil,
         token: String? = nil
     ) {
         self.email = email
-        self.scope = scope
+        self.scopeOption = scopeOption
         self.configuration = configuration ?? .default
         self.token = token
     }
@@ -241,7 +233,7 @@ public struct QuickEditorPresenter {
     ) {
         let quickEditor = QuickEditorViewController(
             email: email,
-            scope: scope,
+            scopeOption: scopeOption,
             configuration: configuration,
             token: token,
             onUpdate: { _ in
@@ -271,7 +263,7 @@ public struct QuickEditorPresenter {
     ) {
         let quickEditor = QuickEditorViewController(
             email: email,
-            scope: scope,
+            scopeOption: scopeOption,
             configuration: configuration,
             token: token,
             onUpdate: onUpdate,
