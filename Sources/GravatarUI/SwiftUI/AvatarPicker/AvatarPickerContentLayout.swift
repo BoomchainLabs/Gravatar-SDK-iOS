@@ -73,21 +73,6 @@ public enum AvatarPickerContentLayout: AvatarPickerContentLayoutProviding, Equat
     }
 }
 
-extension VerticalContentPresentationStyle {
-    @available(iOS 16.0, *)
-    var detents: [QEDetent] {
-        switch self {
-        case .large:
-            [.large]
-        case .expandableMedium(initialFraction: let initialFraction, prioritizeScrollOverResize: _):
-            [
-                .fraction(initialFraction),
-                .large,
-            ]
-        }
-    }
-}
-
 /// Content layout to use pre iOS 16.0 where the system don't offer different presentation styles for SwiftUI.
 /// Use ``AvatarPickerContentLayout`` for iOS 16.0 +.
 enum AvatarPickerContentLayoutType: String, CaseIterable, Identifiable, AvatarPickerContentLayoutProviding {
