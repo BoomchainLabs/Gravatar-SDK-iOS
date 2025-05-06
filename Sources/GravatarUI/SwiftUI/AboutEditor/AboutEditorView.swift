@@ -13,19 +13,23 @@ struct AboutEditorView: View {
     @Environment(\.dynamicTypeSize) var dynamicTypeSize
 
     var body: some View {
-        ScrollView {
-            VStack(alignment: .leading, spacing: 0) {
-                personalInfoContent()
-                if fields.hasMultipleCategories {
-                    Spacer().frame(height: .DS.Padding.double)
+        VStack {
+            ScrollView {
+                VStack(alignment: .leading, spacing: 0) {
+                    personalInfoContent()
+                    if fields.hasMultipleCategories {
+                        Spacer().frame(height: .DS.Padding.double)
+                    }
+                    professionalInfoContent()
                 }
-                professionalInfoContent()
+                .padding(.horizontal, .DS.Padding.double)
+                .padding(.vertical, .DS.Padding.double)
             }
-            .padding(.DS.Padding.double)
-            .avatarPickerBorder(colorScheme: colorScheme, borderWidth: 1)
-            .padding(.horizontal, .DS.Padding.double)
-            Spacer().frame(height: .DS.Padding.double)
         }
+        .avatarPickerBorder(colorScheme: colorScheme, borderWidth: 1)
+        .padding(.horizontal, .DS.Padding.double)
+        Spacer().frame(height: .DS.Padding.double)
+
         saveButton()
             .padding(.horizontal, .DS.Padding.large)
             .padding(.bottom, .DS.Padding.double)
