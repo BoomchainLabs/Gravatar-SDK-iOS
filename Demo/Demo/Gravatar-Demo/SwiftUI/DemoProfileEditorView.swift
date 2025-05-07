@@ -146,8 +146,17 @@ struct DemoProfileEditorView: View {
         case .avatarPicker:
             .avatarPicker(.init(contentLayout: contentLayoutOptions.contentLayout))
         case .aboutEditor:
-                .aboutEditor(.init(presentationStyle: verticalPresentationStyle,
-                                   fields: selectedAboutInfoFields))
+            .aboutEditor(.init(
+                presentationStyle: verticalPresentationStyle,
+                fields: selectedAboutInfoFields)
+            )
+        case .avatarAndAboutEditor:
+            .avatarPickerAndAboutInfoEditor(
+                .init(
+                    contentLayout: contentLayoutOptions.contentLayout,
+                    fields: selectedAboutInfoFields
+                )
+            )
         }
     }
 
@@ -157,6 +166,8 @@ struct DemoProfileEditorView: View {
             .avatarPicker()
         case .aboutEditor:
             .aboutEditor()
+        case .avatarAndAboutEditor:
+            .avatarPicker()
         }
     }
 
@@ -173,6 +184,13 @@ struct DemoProfileEditorView: View {
             if #available(iOS 16.0, *) {
                 QEVerticalStylePickerRow(verticalStyle: $verticalPresentationStyle)
             }
+            aboutFieldsButton()
+        case .avatarAndAboutEditor:
+            if #available(iOS 16.0, *) {
+                QEContentLayoutPickerRow(contentLayoutOptions: $contentLayoutOptions)
+                Divider()
+            }
+            Toggle("Custom image cropper", isOn: $enableCustomImageCropper)
             aboutFieldsButton()
         }
     }

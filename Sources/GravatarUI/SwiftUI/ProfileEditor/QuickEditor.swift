@@ -34,6 +34,11 @@ public struct QuickEditorUpdateType: Sendable, Equatable {
 }
 
 struct QuickEditor<ImageEditor: ImageEditorView>: View {
+    enum MultipleScopeMode {
+        case avatarPicker
+        case aboutEditor
+    }
+
     fileprivate typealias Constants = QuickEditorConstants
 
     @Environment(\.oauthSession) private var oauthSession
@@ -43,6 +48,10 @@ struct QuickEditor<ImageEditor: ImageEditorView>: View {
     @State private var isAuthenticating: Bool = false
     @State private var oauthError: OAuthError?
     @State private var safariURL: IdentifiableURL?
+    /// If the QE is open with the scope switch option, this property will track which scope is currently being presented.
+    /// It's nil when a single scope option was selected.
+    @State private var multipleEditorMode: MultipleScopeMode? = nil
+
     @Binding private var isPresented: Bool
     // Declare "@StateObject"s as private to prevent setting them from a
     // memberwise initializer, which can conflict with the storage
@@ -72,6 +81,9 @@ struct QuickEditor<ImageEditor: ImageEditorView>: View {
         self.externalToken = token
         self.updateHandler = updateHandler
         self._model = StateObject(wrappedValue: AvatarPickerViewModel(email: email, authToken: token))
+        if scopeOption.isAvatarPickerAndAboutInfoEditor {
+            _multipleEditorMode = State(initialValue: .avatarPicker)
+        }
     }
 
     let authorizationFinishedNotification = NotificationCenter.default.publisher(for: .authorizationFinished)
@@ -80,8 +92,8 @@ struct QuickEditor<ImageEditor: ImageEditorView>: View {
     var body: some View {
         NavigationView {
             VStack {
-                if let token {
-                    editorView(with: token)
+                if token != nil {
+                    editorView()
                 } else {
                     noticeView()
                 }
@@ -112,33 +124,51 @@ struct QuickEditor<ImageEditor: ImageEditorView>: View {
         }
     }
 
+    func avatarPickerView(config: AvatarPickerConfiguration) -> some View {
+        AvatarPickerView(
+            model: model,
+            isPresented: $isPresented,
+            contentLayoutProvider: config.contentLayout,
+            customImageEditor: customImageEditor,
+            tokenErrorHandler: externalToken != nil ? nil : {
+                oauthSession.markSessionAsExpired(with: email)
+                performAuthentication()
+            },
+            avatarUpdatedHandler: {
+                updateHandler?(.avatarUpdate)
+            }
+        )
+    }
+
+    @ViewBuilder
+    func aboutEditorView(fields: AboutInfoField) -> some View {
+        AboutEditorView(
+            model: model,
+            fields: fields,
+            aboutUpdateHandler: {
+                updateHandler?(.aboutInfoUpdate)
+            }
+        )
+    }
+
     @MainActor
     @ViewBuilder
-    func editorView(with token: String) -> some View {
+    func editorView() -> some View {
         profileCardHeaderView()
         switch scopeOption.scope {
-        case .avatarPicker:
-            AvatarPickerView(
-                model: model,
-                isPresented: $isPresented,
-                contentLayoutProvider: scopeOption.avatarPickerConfig.contentLayout,
-                customImageEditor: customImageEditor,
-                tokenErrorHandler: externalToken != nil ? nil : {
-                    oauthSession.markSessionAsExpired(with: email)
-                    performAuthentication()
-                },
-                avatarUpdatedHandler: {
-                    updateHandler?(.avatarUpdate)
-                }
-            )
-        case .aboutInfoEditor:
-            AboutEditorView(
-                model: model,
-                fields: scopeOption.aboutEditorConfig.fields,
-                aboutUpdateHandler: {
-                    updateHandler?(.aboutInfoUpdate)
-                }
-            )
+        case .avatarPicker(let config):
+            avatarPickerView(config: config)
+        case .aboutInfoEditor(let config):
+            aboutEditorView(fields: config.fields)
+        case .avatarPickerAndAboutInfoEditor(let config):
+            switch multipleEditorMode {
+            case .avatarPicker:
+                avatarPickerView(config: .init(contentLayout: config.contentLayout))
+            case .aboutEditor:
+                aboutEditorView(fields: config.fields)
+            case nil:
+                EmptyView()
+            }
         }
     }
 
@@ -148,11 +178,36 @@ struct QuickEditor<ImageEditor: ImageEditorView>: View {
             forceRefreshAvatar: $model.forceRefreshAvatar,
             model: $model.profileModel,
             isLoading: $model.isProfileLoading,
-            safariURL: $safariURL
+            safariURL: $safariURL,
+            buttonsMode: .constant(avatarProfileViewButtonMode),
+            buttonTapHandler: profileButtonHandler
         )
         .padding(.top, AvatarPicker.Constants.profileViewTopSpacing / 2)
         .padding(.bottom, AvatarPicker.Constants.vStackVerticalSpacing)
         .padding(.horizontal, AvatarPicker.Constants.horizontalPadding)
+    }
+
+    func profileButtonHandler(_ mode: AvatarPickerProfileViewWrapper.ButtonsMode) {
+        withAnimation {
+            switch mode {
+            case .avatar:
+                multipleEditorMode = .avatarPicker
+            case .aboutInfo:
+                multipleEditorMode = .aboutEditor
+            }
+        }
+    }
+
+    var avatarProfileViewButtonMode: AvatarPickerProfileViewWrapper.ButtonsMode? {
+        // We show the opposite button on the card, so the button mode corresponds to the opposite current mode shown
+        switch multipleEditorMode {
+        case .avatarPicker:
+            .aboutInfo
+        case .aboutEditor:
+            .avatar
+        case .none:
+            nil
+        }
     }
 
     @ViewBuilder
