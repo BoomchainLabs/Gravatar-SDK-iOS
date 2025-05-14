@@ -17,6 +17,10 @@ struct AboutEditorView: View {
     var body: some View {
         if model.isProfileLoading {
             LoadingIndicatorView()
+                .accumulateIntrinsicHeight()
+            // Do not accumulate intrinsic size on a Spacer() since its
+            // height is flexible.
+            Spacer()
         } else {
             content()
         }
