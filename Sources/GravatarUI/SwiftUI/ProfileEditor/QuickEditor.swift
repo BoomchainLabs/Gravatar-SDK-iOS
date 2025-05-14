@@ -146,6 +146,7 @@ struct QuickEditor<ImageEditor: ImageEditorView>: View {
                 unsavedChangesAlertPresentationModel.presentAlert = true
             }
         }
+        .preference(key: MultipleEditModePreferenceKey.self, value: multipleEditorMode)
     }
 
     func avatarPickerView(config: AvatarPickerConfiguration) -> some View {
