@@ -24,7 +24,7 @@ struct AboutEditorView: View {
 
     @ViewBuilder
     private func content() -> some View {
-        VStack {
+        VStack(spacing: 0) {
             ScrollView {
                 VStack(alignment: .leading, spacing: 0) {
                     personalInfoContent()
@@ -33,17 +33,22 @@ struct AboutEditorView: View {
                     }
                     professionalInfoContent()
                 }
+                .fixedSize(horizontal: false, vertical: true)
                 .padding(.horizontal, .DS.Padding.double)
                 .padding(.vertical, .DS.Padding.double)
+                .accumulateIntrinsicHeight()
             }
         }
         .avatarPickerBorder(colorScheme: colorScheme, borderWidth: 1)
         .padding(.horizontal, .DS.Padding.double)
+
         Spacer().frame(height: .DS.Padding.double)
+            .accumulateIntrinsicHeight()
 
         saveButton()
             .padding(.horizontal, .DS.Padding.large)
             .padding(.bottom, .DS.Padding.double)
+            .accumulateIntrinsicHeight()
     }
 
     private func saveButton() -> some View {
