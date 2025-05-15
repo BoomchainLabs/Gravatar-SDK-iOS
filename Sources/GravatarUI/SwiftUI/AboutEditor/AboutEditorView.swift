@@ -20,15 +20,19 @@ struct AboutEditorView: View {
 
     var body: some View {
         ZStack {
-            VStack {
+            VStack(spacing: 0) {
                 if model.isProfileLoading {
                     LoadingIndicatorView()
                         .accumulateIntrinsicHeight()
-                    // Do not accumulate intrinsic size on a Spacer() since its
-                    // height is flexible.
+                    // Avoid calling `.accumulateIntrinsicHeight()` on `Spacer()`.
+                    // It results in incorrect intrinsic size calculation because `Spacer()` height is flexible.
                     Spacer()
                 } else if let error = model.profileResult?.error() {
                     errorView(with: error)
+                        .accumulateIntrinsicHeight()
+                    // Avoid calling .accumulateIntrinsicHeight() on Spacer().
+                    // It results in incorrect intrinsic size calculation because `Spacer()` height is flexible.
+                    Spacer()
                 } else {
                     content()
                 }
@@ -58,6 +62,8 @@ struct AboutEditorView: View {
         .avatarPickerBorder(colorScheme: colorScheme, borderWidth: 1)
         .padding(.horizontal, .DS.Padding.double)
 
+        // Use a *fixed* height Spacer here instead of adding a bottom padding for the
+        // scrollview to calculate intrinsic size correctly.
         Spacer().frame(height: .DS.Padding.double)
             .accumulateIntrinsicHeight()
 
@@ -199,7 +205,6 @@ struct AboutEditorView: View {
             isPresented: $isPresented,
             model: model, tokenErrorHandler: tokenErrorHandler
         )
-        Spacer()
     }
 
     private enum Localized {
