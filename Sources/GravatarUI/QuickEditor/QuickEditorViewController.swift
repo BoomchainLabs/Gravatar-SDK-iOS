@@ -27,6 +27,7 @@ final class QuickEditorViewController: UIViewController, ModalPresentationWithIn
 
     var verticalSizeClass: UserInterfaceSizeClass?
     var sheetHeight: CGFloat = QEModalPresentationConstants.bottomSheetEstimatedHeight
+    var multipleEditorMode: AvatarPickerAndAboutEditorConfiguration.Mode?
 
     private lazy var rootView: QuickEditor = {
         let provider: CustomImageEditorProvider = if let customProvider = configuration.customImageEditorProvider {
@@ -56,7 +57,7 @@ final class QuickEditorViewController: UIViewController, ModalPresentationWithIn
         rootView: rootView,
         onHeightChange: { [weak self] newHeight in
             guard let self else { return }
-            if self.shouldAcceptHeight(newHeight, multipleEditorMode: nil) { // TODO: fix
+            if self.shouldAcceptHeight(newHeight) {
                 self.sheetHeight = newHeight
             }
             self.updateDetents()
@@ -64,6 +65,11 @@ final class QuickEditorViewController: UIViewController, ModalPresentationWithIn
         onVerticalSizeClassChange: { [weak self] verticalSizeClass in
             guard let self, verticalSizeClass != nil else { return }
             self.verticalSizeClass = verticalSizeClass
+            self.updateDetents()
+        },
+        onMultipleEditorModeChange: { [weak self] newValue in
+            guard let self else { return }
+            self.multipleEditorMode = newValue
             self.updateDetents()
         }
     )
@@ -82,6 +88,7 @@ final class QuickEditorViewController: UIViewController, ModalPresentationWithIn
         self.token = token
         self.onDismiss = onDismiss
         self.updateHandler = onUpdate
+        self.multipleEditorMode = scopeOption.initialMultipleEditorMode
         super.init(nibName: nil, bundle: nil)
     }
 
@@ -121,7 +128,7 @@ final class QuickEditorViewController: UIViewController, ModalPresentationWithIn
                     for: scopeOption,
                     intrinsicHeight: sheetHeight,
                     verticalSizeClass: verticalSizeClass,
-                    multipleEditorMode: .aboutEditor // TODO: fix
+                    multipleEditorMode: multipleEditorMode
                 ).map()
             }
             sheet.prefersScrollingExpandsWhenScrolledToEdge = !shouldPrioritizeScrollOverResize
@@ -143,10 +150,17 @@ extension QuickEditorViewController: UISheetPresentationControllerDelegate {
 private class InnerHeightUIHostingController: UIHostingController<AnyView> {
     let onHeightChange: (CGFloat) -> Void
     let onVerticalSizeClassChange: (UserInterfaceSizeClass?) -> Void
+    let onMultipleEditorModeChange: (AvatarPickerAndAboutEditorConfiguration.Mode?) -> Void
 
-    init(rootView: some View, onHeightChange: @escaping (CGFloat) -> Void, onVerticalSizeClassChange: @escaping (UserInterfaceSizeClass?) -> Void) {
+    init(
+        rootView: some View,
+        onHeightChange: @escaping (CGFloat) -> Void,
+        onVerticalSizeClassChange: @escaping (UserInterfaceSizeClass?) -> Void,
+        onMultipleEditorModeChange: @escaping (AvatarPickerAndAboutEditorConfiguration.Mode?) -> Void
+    ) {
         self.onHeightChange = onHeightChange
         self.onVerticalSizeClassChange = onVerticalSizeClassChange
+        self.onMultipleEditorModeChange = onMultipleEditorModeChange
         weak var weakSelf: InnerHeightUIHostingController?
         super.init(rootView: AnyView(
             rootView
@@ -158,6 +172,11 @@ private class InnerHeightUIHostingController: UIHostingController<AnyView> {
                 .onPreferenceChange(VerticalSizeClassPreferenceKey.self) { newSizeClass in
                     Task { @MainActor in
                         weakSelf?._innerVerticalSizeClass = newSizeClass
+                    }
+                }
+                .onPreferenceChange(MultipleEditModePreferenceKey.self) { newValue in
+                    Task { @MainActor in
+                        weakSelf?._innerMultipleEditorMode = newValue
                     }
                 }
         ))
@@ -176,6 +195,10 @@ private class InnerHeightUIHostingController: UIHostingController<AnyView> {
 
     private var _innerVerticalSizeClass: UserInterfaceSizeClass? = nil {
         didSet { onVerticalSizeClassChange(_innerVerticalSizeClass) }
+    }
+    
+    private var _innerMultipleEditorMode: AvatarPickerAndAboutEditorConfiguration.Mode? = nil {
+        didSet { onMultipleEditorModeChange(_innerMultipleEditorMode) }
     }
 }
 
