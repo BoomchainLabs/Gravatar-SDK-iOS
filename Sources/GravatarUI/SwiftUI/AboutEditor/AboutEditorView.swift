@@ -45,6 +45,8 @@ struct AboutEditorView: View {
     @ViewBuilder
     private func content() -> some View {
         VStack(spacing: 0) {
+            // Call .accumulateIntrinsicHeight() for the "contents" of
+            // the ScrollView not the ScrollView itself.
             ScrollView {
                 VStack(alignment: .leading, spacing: 0) {
                     personalInfoContent()
@@ -62,8 +64,8 @@ struct AboutEditorView: View {
         .avatarPickerBorder(colorScheme: colorScheme, borderWidth: 1)
         .padding(.horizontal, .DS.Padding.double)
 
-        // Use a *fixed* height Spacer here instead of adding a bottom padding for the
-        // scrollview to calculate intrinsic size correctly.
+        // It's ok to call .accumulateIntrinsicHeight() on a Spacer() as soon as
+        // it has a fixed height.
         Spacer().frame(height: .DS.Padding.double)
             .accumulateIntrinsicHeight()
 
