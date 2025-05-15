@@ -146,7 +146,7 @@ struct QuickEditor<ImageEditor: ImageEditorView>: View {
                 unsavedChangesAlertPresentationModel.presentAlert = true
             }
         }
-        .preference(key: MultipleEditModePreferenceKey.self, value: multipleEditorMode)
+        .preference(key: MultipleEditorModePreferenceKey.self, value: multipleEditorMode)
         .task {
             model.refresh(modelToRefresh: .all)
         }

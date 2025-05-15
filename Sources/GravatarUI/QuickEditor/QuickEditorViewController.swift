@@ -174,7 +174,7 @@ private class InnerHeightUIHostingController: UIHostingController<AnyView> {
                         weakSelf?._innerVerticalSizeClass = newSizeClass
                     }
                 }
-                .onPreferenceChange(MultipleEditModePreferenceKey.self) { newValue in
+                .onPreferenceChange(MultipleEditorModePreferenceKey.self) { newValue in
                     Task { @MainActor in
                         weakSelf?._innerMultipleEditorMode = newValue
                     }

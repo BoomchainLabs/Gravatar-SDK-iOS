@@ -85,7 +85,7 @@ struct QuickEditorModalPresentationModifier<ModalView: View>: ViewModifier, Moda
                             updateDetents()
                         }
                     }
-                    .onPreferenceChange(MultipleEditModePreferenceKey.self) { newValue in
+                    .onPreferenceChange(MultipleEditorModePreferenceKey.self) { newValue in
                         Task { @MainActor in
                             self.multipleEditorMode = newValue
                             updateDetents()
