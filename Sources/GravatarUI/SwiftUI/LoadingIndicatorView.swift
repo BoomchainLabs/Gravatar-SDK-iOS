@@ -2,11 +2,10 @@ import SwiftUI
 
 struct LoadingIndicatorView: View {
     var body: some View {
-        VStack {
+        VStack(spacing: 0) {
             ProgressView()
                 .progressViewStyle(CircularProgressViewStyle())
                 .controlSize(.regular)
-            Spacer()
         }
         .padding(.top, .DS.Padding.large)
     }

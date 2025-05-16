@@ -24,11 +24,6 @@ class UnsavedChangesAlertPresentationModel: ObservableObject {
 }
 
 struct QuickEditor<ImageEditor: ImageEditorView>: View {
-    enum MultipleScopeMode {
-        case avatarPicker
-        case aboutEditor
-    }
-
     fileprivate typealias Constants = QuickEditorConstants
 
     @Environment(\.oauthSession) private var oauthSession
@@ -85,7 +80,7 @@ struct QuickEditor<ImageEditor: ImageEditorView>: View {
 
     var body: some View {
         NavigationView {
-            VStack {
+            VStack(spacing: 0) {
                 if token != nil {
                     editorView()
                 } else {
@@ -133,6 +128,7 @@ struct QuickEditor<ImageEditor: ImageEditorView>: View {
                 unsavedChangesAlertPresentationModel.presentAlert = true
             }
         }
+        .preference(key: QuikcEditorCurrentPagePreferenceKey.self, value: currentPage)
         .task {
             model.refresh(modelToRefresh: .all)
         }
@@ -224,7 +220,7 @@ struct QuickEditor<ImageEditor: ImageEditorView>: View {
     }
 
     var avatarProfileViewButtonMode: AvatarPickerProfileViewWrapper.ButtonsMode? {
-        guard scopeOption.isAvatarPickerAndAboutInfoEditor else {
+        guard case .avatarPickerAndAboutInfoEditor = scopeOption.scope else {
             return nil
         }
         // We show the opposite button on the card, so the button mode corresponds to the opposite current page being displayed

@@ -19,11 +19,19 @@ struct AboutEditorView: View {
 
     var body: some View {
         ZStack {
-            VStack {
+            VStack(spacing: 0) {
                 if model.isProfileLoading {
                     LoadingIndicatorView()
+                        .accumulateIntrinsicHeight()
+                    // Avoid calling `.accumulateIntrinsicHeight()` on `Spacer()`.
+                    // It results in incorrect intrinsic size calculation because `Spacer()` height is flexible.
+                    Spacer()
                 } else if let error = model.profileResult?.error() {
                     errorView(with: error)
+                        .accumulateIntrinsicHeight()
+                    // Avoid calling .accumulateIntrinsicHeight() on Spacer().
+                    // It results in incorrect intrinsic size calculation because `Spacer()` height is flexible.
+                    Spacer()
                 } else {
                     content()
                 }
@@ -35,7 +43,9 @@ struct AboutEditorView: View {
 
     @ViewBuilder
     private func content() -> some View {
-        VStack {
+        VStack(spacing: 0) {
+            // Call .accumulateIntrinsicHeight() for the "contents" of
+            // the ScrollView not the ScrollView itself.
             ScrollView {
                 VStack(alignment: .leading, spacing: 0) {
                     personalInfoContent()
@@ -44,17 +54,24 @@ struct AboutEditorView: View {
                     }
                     professionalInfoContent()
                 }
+                .fixedSize(horizontal: false, vertical: true)
                 .padding(.horizontal, .DS.Padding.double)
                 .padding(.vertical, .DS.Padding.double)
+                .accumulateIntrinsicHeight()
             }
         }
         .avatarPickerBorder(colorScheme: colorScheme, borderWidth: 1)
         .padding(.horizontal, .DS.Padding.double)
+
+        // It's ok to call .accumulateIntrinsicHeight() on a Spacer() as soon as
+        // it has a fixed height.
         Spacer().frame(height: .DS.Padding.double)
+            .accumulateIntrinsicHeight()
 
         saveButton()
             .padding(.horizontal, .DS.Padding.large)
             .padding(.bottom, .DS.Padding.double)
+            .accumulateIntrinsicHeight()
     }
 
     private func saveButton() -> some View {
@@ -189,7 +206,6 @@ struct AboutEditorView: View {
             isPresented: $isPresented,
             model: model, tokenErrorHandler: tokenErrorHandler
         )
-        Spacer()
     }
 
     private enum Localized {

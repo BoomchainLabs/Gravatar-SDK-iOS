@@ -43,15 +43,6 @@ public struct QuickEditorScopeOption {
             scope: .avatarPickerAndAboutInfoEditor(avatarPickerAndAboutEditorConfig)
         )
     }
-
-    var isAvatarPickerAndAboutInfoEditor: Bool {
-        switch scope {
-        case .avatarPickerAndAboutInfoEditor:
-            true
-        default:
-            false
-        }
-    }
 }
 
 extension QuickEditorScopeOption {

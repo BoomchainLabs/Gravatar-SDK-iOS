@@ -33,3 +33,15 @@ struct VerticalSizeClassPreferenceKey: SizeClassPreferenceKey {
 struct HorizontalSizeClassPreferenceKey: SizeClassPreferenceKey {
     static let defaultValue: UserInterfaceSizeClass? = nil
 }
+
+struct QuikcEditorCurrentPagePreferenceKey: PreferenceKey {
+    typealias Value = QuickEditorPage
+    static let defaultValue: Value = .avatarPicker
+
+    static func reduce(
+        value: inout Value,
+        nextValue: () -> Value
+    ) {
+        value = nextValue()
+    }
+}

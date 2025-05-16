@@ -25,6 +25,7 @@ struct QuickEditorModalPresentationModifier<ModalView: View>: ViewModifier, Moda
     @State private var prioritizeScrollOverResize: Bool = false
     @Environment(\.colorScheme) var colorScheme: ColorScheme
     @State private var dismissAttempt: Bool = false
+    @State private var currentPage: QuickEditorPage
 
     let onDismiss: (() -> Void)?
     let modalView: ModalView
@@ -36,10 +37,12 @@ struct QuickEditorModalPresentationModifier<ModalView: View>: ViewModifier, Moda
         self.onDismiss = onDismiss
         self.modalView = modalView
         self.scopeOption = scopeOption
+        self.currentPage = scopeOption.initialPage
         self.presentationDetents = QEDetent.detents(
             for: scopeOption,
             intrinsicHeight: Constants.bottomSheetEstimatedHeight,
-            verticalSizeClass: nil
+            verticalSizeClass: nil,
+            currentPage: scopeOption.initialPage
         ).map()
     }
 
@@ -54,7 +57,8 @@ struct QuickEditorModalPresentationModifier<ModalView: View>: ViewModifier, Moda
                     self.presentationDetents = QEDetent.detents(
                         for: scopeOption,
                         intrinsicHeight: max(sheetHeight, Constants.bottomSheetEstimatedHeight),
-                        verticalSizeClass: verticalSizeClass
+                        verticalSizeClass: verticalSizeClass,
+                        currentPage: currentPage
                     ).map()
                 }
                 isPresentedInner = newValue
@@ -81,6 +85,12 @@ struct QuickEditorModalPresentationModifier<ModalView: View>: ViewModifier, Moda
                             updateDetents()
                         }
                     }
+                    .onPreferenceChange(QuikcEditorCurrentPagePreferenceKey.self) { newValue in
+                        Task { @MainActor in
+                            self.currentPage = newValue
+                            updateDetents()
+                        }
+                    }
                     .presentationDetents(presentationDetents)
                     .presentationContentInteraction(shouldPrioritizeScrolling: prioritizeScrollOverResize)
                     .dismissAttemptDetecting(
@@ -96,7 +106,8 @@ struct QuickEditorModalPresentationModifier<ModalView: View>: ViewModifier, Moda
         self.presentationDetents = QEDetent.detents(
             for: scopeOption,
             intrinsicHeight: sheetHeight,
-            verticalSizeClass: verticalSizeClass
+            verticalSizeClass: verticalSizeClass,
+            currentPage: currentPage
         ).map()
         self.prioritizeScrollOverResize = shouldPrioritizeScrollOverResize
     }

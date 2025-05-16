@@ -27,6 +27,7 @@ final class QuickEditorViewController: UIViewController, ModalPresentationWithIn
 
     var verticalSizeClass: UserInterfaceSizeClass?
     var sheetHeight: CGFloat = QEModalPresentationConstants.bottomSheetEstimatedHeight
+    var currentPage: QuickEditorPage
 
     private lazy var rootView: QuickEditor = {
         let provider: CustomImageEditorProvider = if let customProvider = configuration.customImageEditorProvider {
@@ -65,6 +66,11 @@ final class QuickEditorViewController: UIViewController, ModalPresentationWithIn
             guard let self, verticalSizeClass != nil else { return }
             self.verticalSizeClass = verticalSizeClass
             self.updateDetents()
+        },
+        onPageChange: { [weak self] newValue in
+            guard let self else { return }
+            self.currentPage = newValue
+            self.updateDetents()
         }
     )
 
@@ -82,6 +88,7 @@ final class QuickEditorViewController: UIViewController, ModalPresentationWithIn
         self.token = token
         self.onDismiss = onDismiss
         self.updateHandler = onUpdate
+        self.currentPage = scopeOption.initialPage
         super.init(nibName: nil, bundle: nil)
     }
 
@@ -120,7 +127,8 @@ final class QuickEditorViewController: UIViewController, ModalPresentationWithIn
                 sheet.detents = QEDetent.detents(
                     for: scopeOption,
                     intrinsicHeight: sheetHeight,
-                    verticalSizeClass: verticalSizeClass
+                    verticalSizeClass: verticalSizeClass,
+                    currentPage: currentPage
                 ).map()
             }
             sheet.prefersScrollingExpandsWhenScrolledToEdge = !shouldPrioritizeScrollOverResize
@@ -142,10 +150,17 @@ extension QuickEditorViewController: UISheetPresentationControllerDelegate {
 private class InnerHeightUIHostingController: UIHostingController<AnyView> {
     let onHeightChange: (CGFloat) -> Void
     let onVerticalSizeClassChange: (UserInterfaceSizeClass?) -> Void
+    let onPageChange: (QuickEditorPage) -> Void
 
-    init(rootView: some View, onHeightChange: @escaping (CGFloat) -> Void, onVerticalSizeClassChange: @escaping (UserInterfaceSizeClass?) -> Void) {
+    init(
+        rootView: some View,
+        onHeightChange: @escaping (CGFloat) -> Void,
+        onVerticalSizeClassChange: @escaping (UserInterfaceSizeClass?) -> Void,
+        onPageChange: @escaping (QuickEditorPage) -> Void
+    ) {
         self.onHeightChange = onHeightChange
         self.onVerticalSizeClassChange = onVerticalSizeClassChange
+        self.onPageChange = onPageChange
         weak var weakSelf: InnerHeightUIHostingController?
         super.init(rootView: AnyView(
             rootView
@@ -157,6 +172,11 @@ private class InnerHeightUIHostingController: UIHostingController<AnyView> {
                 .onPreferenceChange(VerticalSizeClassPreferenceKey.self) { newSizeClass in
                     Task { @MainActor in
                         weakSelf?._innerVerticalSizeClass = newSizeClass
+                    }
+                }
+                .onPreferenceChange(QuikcEditorCurrentPagePreferenceKey.self) { newValue in
+                    Task { @MainActor in
+                        weakSelf?._innerCurrentPage = newValue
                     }
                 }
         ))
@@ -175,6 +195,10 @@ private class InnerHeightUIHostingController: UIHostingController<AnyView> {
 
     private var _innerVerticalSizeClass: UserInterfaceSizeClass? = nil {
         didSet { onVerticalSizeClassChange(_innerVerticalSizeClass) }
+    }
+
+    private var _innerCurrentPage: QuickEditorPage = .avatarPicker {
+        didSet { onPageChange(_innerCurrentPage) }
     }
 }
 

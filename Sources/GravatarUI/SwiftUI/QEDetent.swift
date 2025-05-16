@@ -11,7 +11,8 @@ enum QEDetent {
     static func detents(
         for scopeOption: QuickEditorScopeOption,
         intrinsicHeight: CGFloat,
-        verticalSizeClass: UserInterfaceSizeClass?
+        verticalSizeClass: UserInterfaceSizeClass?,
+        currentPage: QuickEditorPage
     ) -> [QEDetent] {
         switch scopeOption.scope {
         case .avatarPicker(let config):
@@ -27,11 +28,46 @@ enum QEDetent {
                 verticalSizeClass: verticalSizeClass
             )
         case .avatarPickerAndAboutInfoEditor(let config):
-            avatarPickerDetents(
-                for: config.contentLayout,
+            avatarAndAboutEditorDetents(
+                presentation: config.contentLayout,
                 intrinsicHeight: intrinsicHeight,
-                verticalSizeClass: verticalSizeClass
+                verticalSizeClass: verticalSizeClass,
+                currentPage: currentPage
             )
+        }
+    }
+
+    private static func avatarAndAboutEditorDetents(
+        presentation: AvatarPickerContentLayout,
+        intrinsicHeight: CGFloat,
+        verticalSizeClass: UserInterfaceSizeClass?,
+        currentPage: QuickEditorPage
+    ) -> [QEDetent] {
+        switch presentation {
+        case .horizontal:
+            if verticalSizeClass == .compact {
+                // in landscape mode where the device height is small we display the full size sheet(which is
+                // also the default value of the detent).
+                .init([.large])
+            } else {
+                switch currentPage {
+                case .avatarPicker:
+                    .init([.height(intrinsicHeight)])
+                case .aboutEditor:
+                    if intrinsicHeight >= QEModalPresentationConstants.bottomSheetEstimatedHeight {
+                        .init([.height(QEModalPresentationConstants.bottomSheetEstimatedHeight), .large])
+                    } else {
+                        .init([.height(intrinsicHeight)])
+                    }
+                }
+            }
+        case .vertical(let presentationStyle):
+            switch presentationStyle {
+            case .large:
+                .init([.large])
+            case .expandableMedium(let initialFraction, _):
+                .init([.fraction(initialFraction), .large])
+            }
         }
     }
 
