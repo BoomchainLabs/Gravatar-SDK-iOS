@@ -150,13 +150,13 @@ extension QuickEditorViewController: UISheetPresentationControllerDelegate {
 private class InnerHeightUIHostingController: UIHostingController<AnyView> {
     let onHeightChange: (CGFloat) -> Void
     let onVerticalSizeClassChange: (UserInterfaceSizeClass?) -> Void
-    let onMultipleEditorModeChange: (AvatarPickerAndAboutEditorConfiguration.Mode?) -> Void
+    let onMultipleEditorModeChange: (AvatarPickerAndAboutEditorConfiguration.Page?) -> Void
 
     init(
         rootView: some View,
         onHeightChange: @escaping (CGFloat) -> Void,
         onVerticalSizeClassChange: @escaping (UserInterfaceSizeClass?) -> Void,
-        onMultipleEditorModeChange: @escaping (AvatarPickerAndAboutEditorConfiguration.Mode?) -> Void
+        onMultipleEditorModeChange: @escaping (AvatarPickerAndAboutEditorConfiguration.Page?) -> Void
     ) {
         self.onHeightChange = onHeightChange
         self.onVerticalSizeClassChange = onVerticalSizeClassChange
@@ -197,7 +197,7 @@ private class InnerHeightUIHostingController: UIHostingController<AnyView> {
         didSet { onVerticalSizeClassChange(_innerVerticalSizeClass) }
     }
 
-    private var _innerMultipleEditorMode: AvatarPickerAndAboutEditorConfiguration.Mode? = nil {
+    private var _innerMultipleEditorMode: AvatarPickerAndAboutEditorConfiguration.Page? = nil {
         didSet { onMultipleEditorModeChange(_innerMultipleEditorMode) }
     }
 }

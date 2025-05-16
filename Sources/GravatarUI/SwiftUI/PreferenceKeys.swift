@@ -35,7 +35,7 @@ struct HorizontalSizeClassPreferenceKey: SizeClassPreferenceKey {
 }
 
 struct MultipleEditorModePreferenceKey: PreferenceKey {
-    typealias Value = AvatarPickerAndAboutEditorConfiguration.Mode?
+    typealias Value = AvatarPickerAndAboutEditorConfiguration.Page?
     static let defaultValue: Value = .avatarPicker
 
     static func reduce(

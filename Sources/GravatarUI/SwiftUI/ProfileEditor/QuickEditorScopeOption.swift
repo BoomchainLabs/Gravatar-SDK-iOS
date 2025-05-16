@@ -44,10 +44,10 @@ public struct QuickEditorScopeOption {
         )
     }
 
-    var initialMultipleEditorMode: AvatarPickerAndAboutEditorConfiguration.Mode? {
+    var initialMultipleEditorMode: AvatarPickerAndAboutEditorConfiguration.Page? {
         switch scope {
         case .avatarPickerAndAboutInfoEditor(let avatarPickerAndAboutEditorConfiguration):
-            avatarPickerAndAboutEditorConfiguration.initialMode
+            avatarPickerAndAboutEditorConfiguration.initialPage
         default:
             nil
         }

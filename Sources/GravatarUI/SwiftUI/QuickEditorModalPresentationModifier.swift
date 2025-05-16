@@ -25,7 +25,7 @@ struct QuickEditorModalPresentationModifier<ModalView: View>: ViewModifier, Moda
     @State private var prioritizeScrollOverResize: Bool = false
     @Environment(\.colorScheme) var colorScheme: ColorScheme
     @State private var dismissAttempt: Bool = false
-    @State private var multipleEditorMode: AvatarPickerAndAboutEditorConfiguration.Mode?
+    @State private var multipleEditorMode: AvatarPickerAndAboutEditorConfiguration.Page?
 
     let onDismiss: (() -> Void)?
     let modalView: ModalView

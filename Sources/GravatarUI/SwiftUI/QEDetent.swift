@@ -12,7 +12,7 @@ enum QEDetent {
         for scopeOption: QuickEditorScopeOption,
         intrinsicHeight: CGFloat,
         verticalSizeClass: UserInterfaceSizeClass?,
-        multipleEditorMode: AvatarPickerAndAboutEditorConfiguration.Mode?
+        multipleEditorMode: AvatarPickerAndAboutEditorConfiguration.Page?
     ) -> [QEDetent] {
         switch scopeOption.scope {
         case .avatarPicker(let config):
@@ -41,7 +41,7 @@ enum QEDetent {
         for presentation: AvatarPickerContentLayout,
         intrinsicHeight: CGFloat,
         verticalSizeClass: UserInterfaceSizeClass?,
-        multipleEditorMode: AvatarPickerAndAboutEditorConfiguration.Mode?
+        multipleEditorMode: AvatarPickerAndAboutEditorConfiguration.Page?
     ) -> [QEDetent] {
         switch presentation {
         case .horizontal:
