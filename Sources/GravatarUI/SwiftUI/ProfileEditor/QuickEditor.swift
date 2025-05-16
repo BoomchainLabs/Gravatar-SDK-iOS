@@ -23,21 +23,6 @@ class UnsavedChangesAlertPresentationModel: ObservableObject {
     @Published var hasUnsavedChanges: Bool = false
 }
 
-/// Represents the type of update that triggered a callback in the Quick Editor.
-public struct QuickEditorUpdateType: Sendable, Equatable {
-    private enum QEUpdateType {
-        case avatarUpdate
-        case aboutInfoUpdate
-    }
-
-    private let rawValue: QEUpdateType
-
-    /// Indicates that the update was triggered by a change to the user's avatar.
-    public static let avatarUpdate = Self(rawValue: .avatarUpdate)
-    /// Indicates that the update was triggered by a change to the user's about section information.
-    public static let aboutInfoUpdate = Self(rawValue: .aboutInfoUpdate)
-}
-
 struct QuickEditor<ImageEditor: ImageEditorView>: View {
     enum MultipleScopeMode {
         case avatarPicker
@@ -164,7 +149,7 @@ struct QuickEditor<ImageEditor: ImageEditorView>: View {
                 performAuthentication()
             },
             avatarUpdatedHandler: {
-                updateHandler?(.avatarUpdate)
+                updateHandler?(QuickEditorUpdate.Avatar())
             }
         )
     }
@@ -179,8 +164,8 @@ struct QuickEditor<ImageEditor: ImageEditorView>: View {
                 oauthSession.markSessionAsExpired(with: email)
                 performAuthentication()
             },
-            aboutUpdateHandler: {
-                updateHandler?(.aboutInfoUpdate)
+            aboutUpdateHandler: { profile in
+                updateHandler?(QuickEditorUpdate.AboutInfo(profile: profile))
             }
         )
         .focused($isKeyobardPresented)
