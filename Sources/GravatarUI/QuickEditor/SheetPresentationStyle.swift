@@ -1,9 +1,9 @@
 import Foundation
 
-public struct SheetPresentationStyle {
+public struct SheetPresentationStyle: Sendable {
     public static let expandableMediumInitialFraction: CGFloat = 0.7
 
-    enum DetentMode {
+    enum DetentMode: Sendable {
         case large
         case expandableMedium(
             initialFraction: CGFloat = SheetPresentationStyle.expandableMediumInitialFraction,
