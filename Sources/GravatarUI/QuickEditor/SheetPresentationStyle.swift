@@ -45,8 +45,7 @@ public struct SheetPresentationStyle: Sendable {
         .init(detentMode: .intrinsicHeight)
     }
 
-    /// If the content height is below a certain threshold then `.intrinsicHeight` is applied.
-    /// Otherwise `.expandableMedium()` is applied with the proper `initialFraction` and `prioritizeScrollOverResize` parameters depending on the content.
+    /// Applies `.intrinsicHeight` when the content height is below a defined threshold. Otherwise, applies `.expandableMedium()`.
     public static func automatic(prioritizeScrollOverResize: Bool = false) -> SheetPresentationStyle {
         .init(detentMode: .automatic(prioritizeScrollOverResize: prioritizeScrollOverResize))
     }

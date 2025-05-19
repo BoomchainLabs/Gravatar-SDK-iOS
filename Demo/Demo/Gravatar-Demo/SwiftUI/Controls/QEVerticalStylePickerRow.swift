@@ -27,6 +27,8 @@ struct SheetStylePickerRow: View {
                     sheetStyle = .intrinsicHeight()
                 case .automatic:
                     sheetStyle = .automatic()
+                case .automaticPrioritizeScrolling:
+                    sheetStyle = .automatic(prioritizeScrollOverResize: true)
                 }
             }
         }
