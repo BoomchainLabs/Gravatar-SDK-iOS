@@ -29,12 +29,13 @@ struct QuickEditor<ImageEditor: ImageEditorView>: View {
     @Environment(\.oauthSession) private var oauthSession
     @Environment(\.colorScheme) var colorScheme: ColorScheme
     @Environment(\.dismissAttempt) var dismissAttempt
+    @Environment(\.verticalSizeClass) var vertcalSizeClass
+
     @AppStorage("QuickEditor.startOAuthOnAppear") private var startOAuthOnAppear: Bool = false
     @State private var fetchedToken: String?
     @State private var isAuthenticating: Bool = false
     @State private var oauthError: OAuthError?
     @State private var safariURL: IdentifiableURL?
-    @FocusState private var isKeyobardPresented: Bool
 
     /// If the QE is open with the a scope with multiple pages, this property will track which page is currently being presented.
     @State private var currentPage: QuickEditorPage
@@ -164,10 +165,9 @@ struct QuickEditor<ImageEditor: ImageEditorView>: View {
                 updateHandler?(QuickEditorUpdate.AboutInfo(profile: profile))
             }
         )
-        .focused($isKeyobardPresented)
         // Detects taps only on the background to avoid dismissing the keyboard when tapping in a text field.
         .background(Color.clear.onTapGesture {
-            isKeyobardPresented = false
+            model.isKeyboardPresented = false
         })
     }
 
@@ -176,7 +176,7 @@ struct QuickEditor<ImageEditor: ImageEditorView>: View {
     func editorView() -> some View {
         profileCardHeaderView()
             .simultaneousGesture(TapGesture().onEnded {
-                isKeyobardPresented = false
+                model.isKeyboardPresented = false
             })
         switch scopeOption.scope {
         case .avatarPicker(let config):
@@ -234,10 +234,14 @@ struct QuickEditor<ImageEditor: ImageEditorView>: View {
 
     @ViewBuilder
     func profileCardHeaderView() -> some View {
-        EmailText(email: model.email)
-            .accumulateIntrinsicHeight()
-        profileView()
-            .accumulateIntrinsicHeight()
+        if !(vertcalSizeClass == .compact && model.isKeyboardPresented) {
+            EmailText(email: model.email)
+                .accumulateIntrinsicHeight()
+            profileView()
+                .accumulateIntrinsicHeight()
+        } else {
+            EmptyView()
+        }
     }
 
     func noticeView() -> some View {

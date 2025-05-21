@@ -10,10 +10,15 @@ struct AboutEditorView: View {
 
     @State private var isSaving: Bool = false
     @Binding var isPresented: Bool
+
+    @FocusState private var isKeyboardPresented
+
     @ObservedObject var model: AvatarPickerViewModel
     let fields: AboutInfoField
     @Environment(\.colorScheme) var colorScheme: ColorScheme
     @Environment(\.dynamicTypeSize) var dynamicTypeSize
+    @Environment(\.verticalSizeClass) var vertcalSizeClass
+
     var tokenErrorHandler: (() -> Void)?
     var aboutUpdateHandler: ((Profile) -> Void)?
 
@@ -38,6 +43,15 @@ struct AboutEditorView: View {
             }
             ToastContainerView(toastManager: model.toastManager)
                 .padding(.horizontal, Constants.horizontalPadding * 2)
+        }
+        .focused($isKeyboardPresented)
+        .onChange(of: isKeyboardPresented) { newValue in
+            guard model.isKeyboardPresented != newValue else { return }
+            model.isKeyboardPresented = newValue
+        }
+        .onChange(of: model.isKeyboardPresented) { newValue in
+            guard isKeyboardPresented != newValue else { return }
+            isKeyboardPresented = newValue
         }
     }
 
@@ -68,10 +82,12 @@ struct AboutEditorView: View {
         Spacer().frame(height: .DS.Padding.double)
             .accumulateIntrinsicHeight()
 
-        saveButton()
-            .padding(.horizontal, .DS.Padding.large)
-            .padding(.bottom, .DS.Padding.double)
-            .accumulateIntrinsicHeight()
+        if !(isKeyboardPresented && vertcalSizeClass == .compact) {
+            saveButton()
+                .padding(.horizontal, .DS.Padding.large)
+                .padding(.bottom, .DS.Padding.double)
+                .accumulateIntrinsicHeight()
+        }
     }
 
     private func saveButton() -> some View {
