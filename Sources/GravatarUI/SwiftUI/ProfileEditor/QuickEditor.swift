@@ -28,7 +28,9 @@ struct QuickEditor<ImageEditor: ImageEditorView>: View {
 
     @Environment(\.oauthSession) private var oauthSession
     @Environment(\.colorScheme) var colorScheme: ColorScheme
-    @Environment(\.verticalSizeClass) var vertcalSizeClass
+    @Environment(\.dynamicTypeSize) var dynamicTypeSize
+
+    @DeviceOrientation var deviceOrientation
 
     @AppStorage("QuickEditor.startOAuthOnAppear") private var startOAuthOnAppear: Bool = false
     @State private var fetchedToken: String?
@@ -226,12 +228,26 @@ struct QuickEditor<ImageEditor: ImageEditorView>: View {
         }
     }
 
+    var shouldHideProfileCardHeader: Bool {
+        let screenHeight = UIScreen.main.bounds.height
+        let iPhoneSE3rdGenScreenHeight: CGFloat = 667
+
+        return model.isKeyboardPresented && (
+            deviceOrientation == .landscape ||
+                screenHeight <= iPhoneSE3rdGenScreenHeight ||
+                dynamicTypeSize >= .accessibility3
+        )
+    }
+
     @ViewBuilder
     func profileCardHeaderView() -> some View {
-        if !(vertcalSizeClass == .compact && model.isKeyboardPresented) {
-            EmailText(email: model.email)
-                .accumulateIntrinsicHeight()
+        if !shouldHideProfileCardHeader {
+            if fetchedToken != nil {
+                EmailText(email: model.email)
+                    .accumulateIntrinsicHeight()
+            }
             profileView()
+                .dynamicTypeSize(...DynamicTypeSize.xxxLarge)
                 .accumulateIntrinsicHeight()
         } else {
             EmptyView()
