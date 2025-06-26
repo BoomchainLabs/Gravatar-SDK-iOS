@@ -2,6 +2,12 @@ import UIKit
 import Gravatar
 
 class DemoFetchProfileViewController: UIViewController {
+    @StoredValue(keyName: "QEEmailKey", defaultValue: "")
+    var savedEmail: String
+
+    @StoredValue(keyName: "QETokenKey", defaultValue: "")
+    var savedToken: String
+
     let rootStackView: UIStackView = {
         let stack = UIStackView()
         stack.translatesAutoresizingMaskIntoConstraints = false
@@ -19,8 +25,17 @@ class DemoFetchProfileViewController: UIViewController {
         control.selectedSegmentIndex = 0
         return control
     }()
-    
-    let emailField: UITextField = {
+
+    lazy var tokenField: UITextField = {
+        let textField = UITextField()
+        textField.translatesAutoresizingMaskIntoConstraints = false
+        textField.placeholder = "OAuth Token (Optional)"
+        textField.isSecureTextEntry = true
+        textField.text = savedToken
+        return textField
+    }()
+
+    lazy var emailField: UITextField = {
         let textField = UITextField()
         textField.translatesAutoresizingMaskIntoConstraints = false
         textField.placeholder = "Email"
@@ -28,6 +43,7 @@ class DemoFetchProfileViewController: UIViewController {
         textField.autocapitalizationType = .none
         textField.textContentType = .emailAddress
         textField.textAlignment = .center
+        textField.text = savedEmail
         return textField
     }()
     
@@ -64,7 +80,7 @@ class DemoFetchProfileViewController: UIViewController {
         title = "Fetch Profile"
         view.backgroundColor = .systemBackground
 
-        for view in [segmentedControl, emailField, fetchProfileButton, activityIndicator, profileTextView] {
+        for view in [segmentedControl, tokenField, emailField, fetchProfileButton, activityIndicator, profileTextView] {
             rootStackView.addArrangedSubview(view)
         }
         view.addSubview(rootStackView)
@@ -83,7 +99,14 @@ class DemoFetchProfileViewController: UIViewController {
         var identifier: ProfileIdentifier
         
         guard activityIndicator.isAnimating == false else { return }
-        
+
+        if let tokenString = tokenField.text, tokenString.isEmpty == false {
+            Task {
+                await fetchOwnProfile(with: tokenString)
+            }
+            return
+        }
+
         if segmentedControl.selectedSegmentIndex == 0 {
             guard let email = emailField.text, email.isEmpty == false else { return }
             identifier = .email(email)
@@ -109,11 +132,23 @@ class DemoFetchProfileViewController: UIViewController {
         }
     }
 
+    func fetchOwnProfile(with token: String) async {
+        let service = ProfileService()
+        do {
+            let profile = try await service.fetchOwnProfile(token: token)
+            setProfile(with: profile)
+        } catch {
+            showError(error)
+        }
+    }
+
     func setProfile(with profile: Profile) {
         activityIndicator.stopAnimating()
         profileTextView.text = """
 Profile URL: \(profile.profileUrl)
 Display name: \(profile.displayName)
+User login (authenticated): \(profile.userLogin ?? "nil")
+User ID (authenticated): \(String(describing: profile.userId))
 Preferred User Name: \(profile.displayName)
 Thumbnail URL: \(profile.avatarUrl)
 Verified accounts (\(profile.numberVerifiedAccounts ?? 0)): \(profile.verifiedAccounts)
